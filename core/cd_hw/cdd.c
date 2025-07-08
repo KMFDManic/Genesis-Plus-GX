@@ -38,6 +38,8 @@
 #include "shared.h"
 #include "megasd.h"
 
+extern int8 audio_hard_disable;
+
 #if defined(USE_LIBTREMOR) || defined(USE_LIBVORBIS)
 #define SUPPORTED_EXT 20
 #else
@@ -190,7 +192,8 @@ void cdd_init(int samplerate)
 {
   /* CD-DA is running by default at 44100 Hz */
   /* Audio stream is resampled to desired rate using Blip Buffer */
-  blip_set_rates(snd.blips[2], 44100, samplerate);
+  //blip_set_rates(snd.blips[2], 44100, samplerate);
+  blip_set_rates(snd.blips[2], 48000, samplerate);	/* paprium hack */
 }
 
 void cdd_reset(void)
@@ -406,6 +409,16 @@ int cdd_load(char *filename, char *header)
       cdStreamClose(fd);
       return -1;
     }
+
+#ifdef __LIBRETRO__
+    if (config.cd_precache)
+    {
+      log_cb(RETRO_LOG_INFO, "Pre-caching \"%s\" ...\n", filename);
+      if (chd_precache(cdd.chd.file) != CHDERR_NONE)
+        return -1;
+      log_cb(RETRO_LOG_INFO, "Pre-cache done.\n");
+    }
+#endif
 
     /* retrieve CHD header */
     head = chd_get_header(cdd.chd.file);
@@ -659,9 +672,18 @@ int cdd_load(char *filename, char *header)
       if (!(memcmp(lptr, "FILE", 4)))
       {
         /* retrieve current path */
-        ptr = fname + strlen(fname) - 1;
-        while ((ptr - fname) && (*ptr != '/') && (*ptr != '\\')) ptr--;
-        if (ptr - fname) ptr++;
+        if (strstr(lptr, "://"))
+        {
+          /* URIs do not get filtered */
+          ptr = fname;
+        }
+        else
+        {
+          /* this removes all directories from the path and just leaves the filename */
+          ptr = fname + strlen(fname) - 1;
+          while ((ptr - fname) && (*ptr != '/') && (*ptr != '\\')) ptr--;
+          if (ptr - fname) ptr++;
+        }
 
         /* skip "FILE" attribute */
         lptr += 4;
@@ -1465,6 +1487,38 @@ void cdd_read_audio(unsigned int samples)
 
     /* CD-DA fader volume setup (0-1024) */
     int endVol = cdd.fader[1];
+
+	if (audio_hard_disable)
+    {
+      if (endVol > curVol)
+      {
+        if (endVol - curVol < samples)
+        {
+          curVol = endVol;
+        }
+        else
+        {
+          curVol += samples;
+        }
+      }
+      else if (curVol > endVol)
+      {
+        if (curVol - endVol < samples)
+        {
+          curVol = endVol;
+        }
+        else
+        {
+          curVol -= samples;
+        }
+      }
+
+      /* save current CD-DA fader volume */
+      cdd.fader[0] = curVol;
+
+      blip_end_frame(snd.blips[2], samples);
+      return;
+    }
 
     /* read samples from current block */
 #if defined(USE_LIBCHDR)
