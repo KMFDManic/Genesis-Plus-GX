@@ -2846,6 +2846,36 @@ static void paprium_init()
 }
 
 
+
+static inline void paprium_unload_mp3(void) {
+    if (paprium_mp3d_info.buffer) {
+        free(paprium_mp3d_info.buffer);
+        paprium_mp3d_info.buffer = NULL;
+    }
+    if (paprium_mp3d_info_boss1.buffer) {
+        free(paprium_mp3d_info_boss1.buffer);
+        paprium_mp3d_info_boss1.buffer = NULL;
+    }
+    if (paprium_mp3d_info_boss2.buffer) {
+        free(paprium_mp3d_info_boss2.buffer);
+        paprium_mp3d_info_boss2.buffer = NULL;
+    }
+    if (paprium_mp3d_info_boss3.buffer) {
+        free(paprium_mp3d_info_boss3.buffer);
+        paprium_mp3d_info_boss3.buffer = NULL;
+    }
+    if (paprium_mp3d_info_boss4.buffer) {
+        free(paprium_mp3d_info_boss4.buffer);
+        paprium_mp3d_info_boss4.buffer = NULL;
+    }
+
+    memset(&paprium_mp3d_info, 0, sizeof(paprium_mp3d_info));
+    memset(&paprium_mp3d_info_boss1, 0, sizeof(paprium_mp3d_info_boss1));
+    memset(&paprium_mp3d_info_boss2, 0, sizeof(paprium_mp3d_info_boss2));
+    memset(&paprium_mp3d_info_boss3, 0, sizeof(paprium_mp3d_info_boss3));
+    memset(&paprium_mp3d_info_boss4, 0, sizeof(paprium_mp3d_info_boss4));
+}
+
 static void paprium_reset()
 {
 	paprium_init();
