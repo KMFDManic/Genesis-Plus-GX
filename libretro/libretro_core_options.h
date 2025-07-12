@@ -96,6 +96,20 @@ struct retro_core_option_v2_category option_cats_us[] = {
 
 struct retro_core_option_v2_definition option_defs_us[] = {
    {
+      "paprium_xtreme_memory_fix",
+      "Paprium Xtreme Memory Fix",
+      NULL,
+      "Disables potentially problematic memory hogging MP3 tracks that may lead to game freezing and/or crashing.",
+      NULL,
+      "system",
+      {
+         { "disabled", "Disabled" },
+         { "enabled",  "Enabled"  },
+         { NULL, NULL },
+      },
+      "enabled"
+   },
+   {
       "genesis_plus_gx_system_hw",
       "System Hardware",
       NULL,
@@ -416,7 +430,7 @@ struct retro_core_option_v2_definition option_defs_us[] = {
          { "enabled",  NULL },
          { NULL, NULL },
       },
-      "auto"
+      "enabled"
    },
 #ifdef HAVE_OPLL_CORE
    {
@@ -1598,7 +1612,7 @@ struct retro_core_option_v2_definition option_defs_us[] = {
          { "enabled",  NULL },
          { NULL, NULL },
       },
-      "disabled"
+      "enabled"
    },
    {
       "genesis_plus_gx_enhanced_vscroll",
@@ -1650,6 +1664,7 @@ struct retro_core_option_v2_definition option_defs_us[] = {
       NULL,
       "hacks",
       {
+      
          { "100", "100%" },
          { "125", "125%" },
          { "150", "150%" },
@@ -1667,6 +1682,14 @@ struct retro_core_option_v2_definition option_defs_us[] = {
          { "450", "450%" },
          { "475", "475%" },
          { "500", "500%" },
+         { "60", "60%" },
+         { "65", "65%" },
+         { "70", "70%" },
+         { "75", "75%" },
+         { "80", "80%" },
+         { "85", "85%" },
+         { "90", "90%" },
+         { "95", "95%" },                   
          { NULL, NULL },
       },
       "100%"

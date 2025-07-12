@@ -125,6 +125,8 @@ char CD_BRAM_US[256];
 char CD_BRAM_EU[256];
 char CART_BRAM[256];
 
+bool paprium_xtreme_memory_fix = false;
+
 static int vwidth;
 static int vheight;
 static int vwoffset;
@@ -1514,6 +1516,13 @@ static void check_variables(bool first_run)
       }
      }
    }
+
+  var.key = "paprium_xtreme_memory_fix";
+  environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var);
+    if (var.value && !strcmp(var.value, "enabled"))
+      paprium_xtreme_memory_fix = true;
+    else
+      paprium_xtreme_memory_fix = false;
 
   var.key = "genesis_plus_gx_system_hw";
   environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var);

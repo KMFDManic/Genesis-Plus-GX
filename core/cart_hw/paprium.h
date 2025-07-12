@@ -160,6 +160,20 @@ static void paprium_load_mp3(int track, int reload)
 	static char name[512];
 
 	paprium_s.music_track = track;
+	
+	extern bool paprium_xtreme_memory_fix;
+	if (paprium_xtreme_memory_fix) {
+		switch (track) {
+			case 0x01: // 90's Acid Dub Character Select
+			case 0x0C: // Continue
+			case 0x15: // Intro (Dark Bounce)
+			case 0x17: // Drumbass Boss
+			case 0x35: // Stage Clear
+			case 0x39: // Theme of Paprium
+				paprium_s.music_track = 0;
+				return;
+		}
+	}	
 
 #ifdef _WIN32
 	sprintf(error_str, "%s\\paprium\\", g_rom_dir);
@@ -2844,8 +2858,6 @@ static void paprium_init()
 
 	paprium_s.music_segment = -1;
 }
-
-
 
 static inline void paprium_unload_mp3(void) {
     if (paprium_mp3d_info.buffer) {
