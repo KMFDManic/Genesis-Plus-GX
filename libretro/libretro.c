@@ -125,7 +125,7 @@ char CD_BRAM_US[256];
 char CD_BRAM_EU[256];
 char CART_BRAM[256];
 
-bool paprium_xtreme_memory_fix = false;
+int paprium_xtreme_memory_fix_level = 0;
 
 static int vwidth;
 static int vheight;
@@ -1519,11 +1519,25 @@ static void check_variables(bool first_run)
 
   var.key = "paprium_xtreme_memory_fix";
   environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var);
-    if (var.value && !strcmp(var.value, "enabled"))
-      paprium_xtreme_memory_fix = true;
-    else
-      paprium_xtreme_memory_fix = false;
 
+  if (var.value)
+  {
+       if (!strcmp(var.value, "level1"))
+        paprium_xtreme_memory_fix_level = 1;
+     else if (!strcmp(var.value, "level2"))
+        paprium_xtreme_memory_fix_level = 2;
+     else if (!strcmp(var.value, "level3"))
+        paprium_xtreme_memory_fix_level = 3;
+     else if (!strcmp(var.value, "level4"))
+        paprium_xtreme_memory_fix_level = 4;
+     else
+        paprium_xtreme_memory_fix_level = 0;
+  }
+  else
+  {
+     paprium_xtreme_memory_fix_level = 0;
+  }
+  
   var.key = "genesis_plus_gx_system_hw";
   environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var);
   {

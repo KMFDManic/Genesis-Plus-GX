@@ -99,15 +99,18 @@ struct retro_core_option_v2_definition option_defs_us[] = {
       "paprium_xtreme_memory_fix",
       "Paprium Xtreme Memory Fix",
       NULL,
-      "Disables potentially problematic memory hogging MP3 tracks that may lead to game freezing and/or crashing.",
+      "Skips select MP3 tracks to avoid memory overload or crashes. Use higher levels on systems with less RAM.",
       NULL,
       "system",
       {
          { "disabled", "Disabled" },
-         { "enabled",  "Enabled"  },
+         { "level1",   "Level 1 - Minimal Skips" },
+         { "level2",   "Level 2 - Moderate Skips" },
+         { "level3",   "Level 3 - Aggressive Skips" },
+         { "level4",   "Level 4 - Ultra Skips" },
          { NULL, NULL },
       },
-      "enabled"
+      "level4"
    },
    {
       "genesis_plus_gx_system_hw",
