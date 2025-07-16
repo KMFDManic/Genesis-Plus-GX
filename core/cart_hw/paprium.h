@@ -15,6 +15,10 @@ Project Little Man
 
 #define MINIMP3_IMPLEMENTATION
 #include "minimp3_ex.h"
+
+// Uncomment the line below if you encounter screeching audio due to byte order issues
+// #define PAPRIUM_WAV_SWAP_ENDIAN
+
 #include <sys/stat.h>
 
 static int paprium_file_exists(const char *p)
@@ -57,6 +61,19 @@ static int paprium_load_audio(const char       *mp3_path,
 
       fread(buf, 1, data_bytes, fp);
       fclose(fp);
+
+#ifdef PAPRIUM_WAV_SWAP_ENDIAN
+  for (uint32_t i = 0; i < data_bytes; i += 2)
+  {
+     uint8_t lo = buf[i];
+     uint8_t hi = buf[i+1];
+     buf[i]   = hi;
+     buf[i+1] = lo;
+  }
+#endif
+
+      
+     
 
       info->buffer   = (mp3d_sample_t *)buf;
       info->samples  = data_bytes / 2;
