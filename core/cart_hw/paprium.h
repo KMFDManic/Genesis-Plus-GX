@@ -15,6 +15,59 @@ Project Little Man
 
 #define MINIMP3_IMPLEMENTATION
 #include "minimp3_ex.h"
+#include <sys/stat.h>
+
+static int paprium_file_exists(const char *p)
+{
+   struct stat st;
+   return !stat(p, &st);
+}
+
+static int paprium_load_audio(const char       *mp3_path,
+                              mp3dec_t         *dec,
+                              mp3dec_file_info_t *info)
+{
+   char wav_path[PATH_MAX];
+   strncpy(wav_path, mp3_path, sizeof(wav_path));
+   char *dot = strrchr(wav_path, '.');
+   if (dot) strcpy(dot, ".wav");
+
+   if (paprium_file_exists(wav_path))
+   {
+      FILE *fp = fopen(wav_path, "rb");
+      if (!fp) return -1;
+
+      fseek(fp, 22, SEEK_SET);
+      uint16_t channels = fgetc(fp) | (fgetc(fp) << 8);
+
+      fseek(fp, 24, SEEK_SET);
+      uint32_t hz  =  fgetc(fp)       |
+                     (fgetc(fp) <<  8) |
+                     (fgetc(fp) << 16) |
+                     (fgetc(fp) << 24);
+
+      fseek(fp, 40, SEEK_SET);
+      uint32_t data_bytes  = fgetc(fp)       |
+                            (fgetc(fp) <<  8) |
+                            (fgetc(fp) << 16) |
+                            (fgetc(fp) << 24);
+
+      uint8_t *buf = (uint8_t*)malloc(data_bytes);
+      if (!buf) { fclose(fp); return -2; }
+
+      fread(buf, 1, data_bytes, fp);
+      fclose(fp);
+
+      info->buffer   = (mp3d_sample_t *)buf;
+      info->samples  = data_bytes / 2;
+      info->hz       = hz;
+      info->channels = channels;
+      return 0;
+   }
+
+   return mp3dec_load(dec, mp3_path, info, NULL, NULL);
+}
+
 
 
 static mp3dec_t paprium_mp3d;
@@ -273,7 +326,7 @@ if (paprium_xtreme_memory_fix_level > 0) {
 	paprium_s.music_tick = 0;
 
 	if( track != PAPRIUM_BOSS1 && track != PAPRIUM_BOSS2 && track != PAPRIUM_BOSS3 && track != PAPRIUM_BOSS4 ) {
-		if( mp3dec_load(&paprium_mp3d, name, &paprium_mp3d_info, NULL, NULL) ) {
+		if( paprium_load_audio(name, &paprium_mp3d, &paprium_mp3d_info) ) {
 			paprium_s.music_track = 0;
 			return;
 		}
@@ -292,16 +345,16 @@ static void paprium_load_mp3_boss()
 #endif
 
 	sprintf(name, "%s04 Drumbass Boss.mp3", error_str);
-	mp3dec_load(&paprium_mp3d_boss1, name, &paprium_mp3d_info_boss1, NULL, NULL);
+	paprium_load_audio(name, &paprium_mp3d_boss1, &paprium_mp3d_info_boss1);
 
 	sprintf(name, "%s22 Hardcore BP1.mp3", error_str);
-	mp3dec_load(&paprium_mp3d_boss2, name, &paprium_mp3d_info_boss2, NULL, NULL);
+	paprium_load_audio(name, &paprium_mp3d_boss2, &paprium_mp3d_info_boss2);
 
 	sprintf(name, "%s11 Hardcore BP2.mp3", error_str);
-	mp3dec_load(&paprium_mp3d_boss3, name, &paprium_mp3d_info_boss3, NULL, NULL);
+	paprium_load_audio(name, &paprium_mp3d_boss3, &paprium_mp3d_info_boss3);
 
 	sprintf(name, "%s38 Hardcore BP3.mp3", error_str);
-	mp3dec_load(&paprium_mp3d_boss4, name, &paprium_mp3d_info_boss4, NULL, NULL);
+	paprium_load_audio(name, &paprium_mp3d_boss4, &paprium_mp3d_info_boss4);
 }
 
 
