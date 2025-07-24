@@ -97,9 +97,9 @@ struct retro_core_option_v2_category option_cats_us[] = {
 struct retro_core_option_v2_definition option_defs_us[] = {
    {
       "paprium_xtreme_memory_fix",
-      "Paprium Xtreme Memory Fix",
+      "Paprium Xtreme Memory Clear",
       NULL,
-      "Skips select MP3 tracks to avoid memory overload or crashes. Use higher levels on systems with less RAM.",
+      "Unloads RAM from MP3s/Wavs, as well as tier skips select MP3 tracks to avoid memory overload or crashes. Use higher levels on systems with less RAM.  Disable if you have 2 GB of RAM or more",
       NULL,
       "system",
       {
@@ -110,7 +110,7 @@ struct retro_core_option_v2_definition option_defs_us[] = {
          { "level4",   "Level 4 - Ultra Skips" },
          { NULL, NULL },
       },
-      "level4"
+      "level1"
    },
    {
       "genesis_plus_gx_system_hw",

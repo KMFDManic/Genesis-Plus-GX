@@ -16,6 +16,9 @@ Project Little Man
 #define MINIMP3_IMPLEMENTATION
 #include "minimp3_ex.h"
 
+extern int paprium_xtreme_memory_fix_level;
+static inline void paprium_unload_mp3(void);
+
 // Uncomment the line below if you encounter screeching audio due to byte order issues
 // #define PAPRIUM_WAV_SWAP_ENDIAN
 
@@ -227,6 +230,9 @@ uint8 paprium_volume_table[256] =
 
 static void paprium_load_mp3(int track, int reload)
 {
+    if (paprium_xtreme_memory_fix_level > 0) {
+        paprium_unload_mp3();
+    }  
 	static char name[512];
 
 	paprium_s.music_track = track;
@@ -244,16 +250,6 @@ if (paprium_xtreme_memory_fix_level > 0) {
 			}
 			// fall through
 		case 3: // Aggressive
-			if (track == 0x17 || // Drumbass Boss
-			    track == 0x21 || // Hardcore BP1
-			    track == 0x22 || // Hardcore BP2
-			    track == 0x23)   // Hardcore BP3
-			{
-				paprium_s.music_track = 0;
-				return;
-			}
-			// fall through
-		case 2: // Moderate
 			if (track == 0x15 || // Intro (Dark Bounce)
 			    track == 0x39)   // Theme of Paprium
 			{
@@ -261,12 +257,22 @@ if (paprium_xtreme_memory_fix_level > 0) {
 				return;
 			}
 			// fall through
-		case 1: // Minimal
+		case 2: // Moderate
 			if (track == 0x01 || // Character Select
 			    track == 0x0C || // Continue
 			    track == 0x1D || // Game Over
 			    track == 0x24 || // High Score
-			    track == 0x35)   // Stage Clear
+			    track == 0x35)   // Stage Clear		
+			{
+				paprium_s.music_track = 0;
+				return;
+			}
+			// fall through
+		case 1: // Minimal
+			if (track == 0x17 || // Drumbass Boss
+			    track == 0x21 || // Hardcore BP1
+			    track == 0x22 || // Hardcore BP2
+			    track == 0x23)   // Hardcore BP3
 			{
 				paprium_s.music_track = 0;
 				return;
